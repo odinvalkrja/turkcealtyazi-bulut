@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: turkcealtyazi-bulut
+    runtime: node
+    plan: free
+    buildCommand: npm ci --omit=dev
+    startCommand: node server.mjs
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.16.0
