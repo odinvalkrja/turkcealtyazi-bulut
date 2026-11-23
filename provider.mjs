@@ -32,7 +32,12 @@ export function parseMovie(html) {
 }
 export async function findMovie(imdb) {
   if(!/^tt\d{7,10}$/.test(imdb))return [];
-  const site=new Site();let page=await site.get(`/find.php?cat=sub&find=${imdb}`);
+  const site=new Site();let page;
+  try { page=await site.get(`/mov/${imdb.slice(2)}/film.html`); }
+  catch (directError) {
+    try { page=await site.get(`/find.php?cat=sub&find=${imdb}`); }
+    catch (searchError) { throw Error(`Film sayfası: ${directError.message} Arama: ${searchError.message}`); }
+  }
   const digits=imdb.slice(2), $=load(page.data.toString('utf8'));
   if(!new URL(page.url).pathname.startsWith(`/mov/${digits}/`)) {
     const link=$(`a[href^="/mov/${digits}/"]`).first().attr('href');
